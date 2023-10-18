@@ -10,11 +10,11 @@ VALUES
   (2, 'Property 2 Title', 'Property 2 Description', 'https://www.bortolotto.com/BortolottoDev/media/Bortolotto/Projects/Bezier%20Curve%20House/Top-Image.png?ext=.png', 'https://cdn.tatlerasia.com/tatlerasia/i/2022/02/14091613-landscapelanai-ish4910_cover_1500x1000.jpg', 425, 2, 2.5, 4, 'Canada', 'Misnamed Way', 'Toronto', 'ON', 'M5C 9E0', true),
   (3, 'Property 3 Title', 'Property 3 Description', 'https://architecture-org.s3.amazonaws.com/files/events/wide_lrg_thumbnail-flw-heurtley-house-steven-sabourin-01-no-2.jpg', 'https://robbreport.com/wp-content/uploads/2023/05/FLW_Tirranna2.jpg?w=1000', 350, 1, 2, 3, 'Canada', 'Affordable Avenue', 'Calgary', 'AB', 'T9W 7A4', true);
 
-INSERT INTO property_reviews (guest_id, property_id, message, rating)
+INSERT INTO property_reviews (guest_id, property_id, rating, message)
 VALUES
-  (1, 1, 'messageTextHere', 3.75),
-  (2, 2, 'messageTextHere', 4.5),
-  (3, 3, 'messageTextHere', 2.25);
+  (1, 1, 3.75, 'messageTextHere'),
+  (2, 2, 4, 'messageTextHere'),
+  (3, 3, 2.25, 'messageTextHere');
 
 INSERT INTO reservations (start_date, end_date, property_id, guest_id)
 VALUES 
