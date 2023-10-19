@@ -29,6 +29,15 @@ CREATE TABLE properties (
   active BOOLEAN DEFAULT TRUE
 );
 
+CREATE TABLE reservations (
+  id SERIAL PRIMARY KEY NOT NULL,
+  start_date DATE,
+  end_date DATE,
+
+  property_id INTEGER REFERENCES properties(id) ON DELETE CASCADE,
+  guest_id INTEGER REFERENCES users(id) ON DELETE CASCADE
+);
+
 CREATE TABLE property_reviews (
   id SERIAL PRIMARY KEY NOT NULL,
   guest_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
@@ -39,11 +48,3 @@ CREATE TABLE property_reviews (
   message TEXT
 );
 
-CREATE TABLE reservations (
-  id SERIAL PRIMARY KEY NOT NULL,
-  start_date DATE,
-  end_date DATE,
-
-  property_id INTEGER REFERENCES properties(id) ON DELETE CASCADE,
-  guest_id INTEGER REFERENCES users(id) ON DELETE CASCADE
-);
