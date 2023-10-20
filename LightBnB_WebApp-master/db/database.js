@@ -1,3 +1,4 @@
+const { query } = require('express');
 const { Pool } = require('pg');
 const pool = new Pool ({
   user: 'vagrant',
@@ -120,13 +121,61 @@ const getAllReservations = function (guest_id, limit = 10) {
  * @param {*} limit The number of results to return.
  * @return {Promise<[{}]>}  A promise to the properties.
  */
+
 const getAllProperties = (options, limit = 10) => {
+  const queryParams = [];
+  const whereFilter = [];
+  
+  let queryString = `
+  SELECT properties.*, AVG(property_reviews.rating) AS average_ratings
+  FROM properties
+  JOIN property_reviews ON properties.id = property_id
+  `;
 
-  const queryString = `
-  SELECT * FROM properties LIMIT $1`;
+  if (options.city) {
+    queryParams.push(`%${options.city}%`);
+    whereFilter.push(`city ILIKE $${queryParams.length} `);
+  }  
+  
+  if (options.owner_id) {
+    queryParams.push(options.owner_id);
+    whereFilter.push(`owner_id = $${queryParams.length}`);
+  } 
+  
+  console.log('options', options);
+  if (options.minimum_price_per_night) {
+    console.log('min');
+    queryParams.push(options.minimum_price_per_night * 100);
+    whereFilter.push(`(cost_per_night >= $${queryParams.length})`);
+  }
 
-  return pool.query (queryString, [limit])
+  if(options.maximum_price_per_night) {
+    console.log('max');
+    queryParams.push(options.maximum_price_per_night * 100);
+    whereFilter.push(`(cost_per_night <= $${queryParams.length})`);
+  }
+  
+  if (whereFilter.length > 0) {
+    queryString += 'WHERE ' + whereFilter.join(' AND ');
+  }
+  
+  queryString += `
+  GROUP BY properties.id `
+  
+  if (options.minimum_rating) {
+    queryParams.push(options.minimum_rating);
+    queryString += ` HAVING AVG(property_reviews.rating) >= $${queryParams.length} `;
+  }
 
+  queryParams.push(limit);
+  queryString += `
+  ORDER BY cost_per_night
+  LIMIT $${queryParams.length}
+  `;
+
+  console.log(queryString, queryParams);
+
+  return pool.query (queryString, queryParams)
   .then((result) => {
     // console.log(result.rows);
     return result.rows;
@@ -142,10 +191,8 @@ const getAllProperties = (options, limit = 10) => {
  * @return {Promise<{}>} A promise to the property.
  */
 const addProperty = function (property) {
-  const propertyId = Object.keys(properties).length + 1;
-  property.id = propertyId;
-  properties[propertyId] = property;
-  return Promise.resolve(property);
+
+  
 };
 
 module.exports = {
